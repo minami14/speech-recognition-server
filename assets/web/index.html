@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang='ja'>
+<head>
+    <meta charset='utf-8'>
+    <title>Speech recognition</title>
+    <script>
+        const url = "ws://" + window.location.host + "/ws";
+        const ws = new WebSocket(url);
+
+        ws.onopen = function () {
+            ws.send('chrome');
+            run();
+            document.getElementById('status').innerHTML = 'Connected';
+        };
+
+        ws.onclose = function () {
+            document.getElementById('status').innerHTML = 'Closed';
+        };
+
+        ws.onerror = function (err) {
+            document.getElementById('status').innerHTML = 'Error';
+            console.error(err);
+        };
+
+        const run = function () {
+            let recognition = new webkitSpeechRecognition();
+            recognition.lang = 'ja-JP';
+            recognition.onresult = function (event) {
+                let result = event.results[event.resultIndex][0].transcript;
+                let tmp = document.getElementById('result').innerHTML;
+                document.getElementById('result').innerHTML = result + "<br>" + tmp;
+                ws.send(result);
+            };
+            recognition.onspeechend = function () {
+                recognition.stop();
+                run();
+            };
+            recognition.onerror = function (err) {
+                console.error(err);
+                recognition.stop();
+                run();
+            };
+            recognition.start();
+        };
+    </script>
+</head>
+<body>
+<div id="status">Connecting...</div>
+<div id="result"></div>
+</body>
+</html>
