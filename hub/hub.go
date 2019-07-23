@@ -1,9 +1,10 @@
 package hub
 
 import (
-	"github.com/gorilla/websocket"
 	"log"
 	"os"
+
+	"github.com/gorilla/websocket"
 )
 
 // Hub maintains the set of active clients and broadcasts messages to the clients.
